@@ -1,0 +1,15 @@
+{
+	"appId": "com.murilobd.tellmewhatyouaredoing",
+	"productName": "Tell me what you are doing",
+	"mac": {
+		"category": "public.app-category.utilities",
+		"target": ["dmg"]
+	},
+	"files": ["src/**/*", "package.json"],
+	"directories": {
+		"buildResources": "assets"
+	},
+	"extraMetadata": {
+		"version": "1.0.0"
+	}
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What are you working on?</title>
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+
+<body>
+    <div class="popup-container">
+        <h2>What were you working on?</h2>
+        <p style="color: var(--text-medium); margin-bottom: 1rem;">Record what you've been doing in the last 15 minutes
+        </p>
+
+        <div class="tasks-container">
+            <h3>Select a task:</h3>
+            <div id="uncompleted-tasks" class="task-list">
+                <div class="loading-tasks">Loading tasks...</div>
+            </div>
+        </div>
+
+        <p class="input-divider"><span>OR add custom text</span></p>
+
+        <textarea id="text-input" placeholder="I was working on..."></textarea>
+        <div style="display: flex; justify-content: flex-end;">
+            <button id="submit-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+                </svg>
+                Save Activity
+            </button>
+        </div>
+    </div>
+    <script src="../scripts/popup.js"></script>
+</body>
+
+</html>

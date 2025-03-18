@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity History</title>
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+
+<body>
+    <div id="app">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1 style="margin-bottom: 0; border-bottom: none; padding-bottom: 0;">Activity History</h1>
+            <div class="navigation-controls" style="margin: 0;">
+                <button id="back-button" onclick="window.location.href='../index.html'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Home
+                </button>
+            </div>
+        </header>
+
+        <p style="color: var(--text-medium); margin-bottom: 1.5rem;">View all your recorded activities and when they
+            were logged.</p>
+
+        <div
+            style="background-color: var(--bg-light); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date and Time</th>
+                        <th>Activity</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <!-- Entries will be populated here by history.js -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="../scripts/history.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+{
+	"name": "tell-me-what-you-are-doing",
+	"productName": "Tell me what you are doing",
+	"version": "1.0.0",
+	"description": "An application that reminds users to input what they're working on every 15 minutes.",
+	"main": "src/main/index.js",
+	"scripts": {
+		"start": "NODE_ENV=development electron .",
+		"build": "electron-builder",
+		"postinstall": "electron-rebuild"
+	},
+	"devDependencies": {
+		"@electron/rebuild": "^3.7.1",
+		"electron": "^25.0.0",
+		"electron-builder": "^24.0.0"
+	},
+	"keywords": [
+		"electron",
+		"macos",
+		"reminder",
+		"productivity",
+		"time-tracking",
+		"sqlite"
+	],
+	"author": "Murilo Boareto Delefrate",
+	"license": "MIT",
+	"homepage": "https://github.com/murilobd/tell-me-what-you-are-doing",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/murilobd/tell-me-what-you-are-doing.git"
+	},
+	"build": {
+		"appId": "com.murilobd.tellmewhatyouaredoing",
+		"productName": "Tell me what you are doing",
+		"mac": {
+			"category": "public.app-category.productivity",
+			"target": "dmg"
+		}
+	},
+	"dependencies": {
+		"better-sqlite3": "^8.0.1"
+	}
+}
