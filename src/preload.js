@@ -34,4 +34,24 @@ contextBridge.exposeInMainWorld("electronAPI", {
 		ipcRenderer.invoke("assign-tag-to-todo", todoId, tagName),
 	removeTagFromTodo: (todoId, tagId) =>
 		ipcRenderer.invoke("remove-tag-from-todo", todoId, tagId),
+
+	// NEW: Weekly goals APIs
+	createWeeklyGoal: (text) => ipcRenderer.invoke("create-weekly-goal", text),
+	getCurrentWeekGoals: () => ipcRenderer.invoke("get-current-week-goals"),
+	getWeekGoals: (weekNumber, year) =>
+		ipcRenderer.invoke("get-week-goals", weekNumber, year),
+	toggleGoalCompletion: (id, completed) =>
+		ipcRenderer.invoke("toggle-goal-completion", id, completed),
+	deleteWeeklyGoal: (id) => ipcRenderer.invoke("delete-weekly-goal", id),
+	linkTodoToGoal: (todoId, goalId) =>
+		ipcRenderer.invoke("link-todo-to-goal", todoId, goalId),
+	unlinkTodoFromGoal: (todoId, goalId) =>
+		ipcRenderer.invoke("unlink-todo-from-goal", todoId, goalId),
+	getGoalsForTodo: (todoId) =>
+		ipcRenderer.invoke("get-goals-for-todo", todoId),
+	getCurrentWeekNumber: () => ipcRenderer.invoke("get-current-week-number"),
+
+	// Event notification for goal updates
+	onGoalsUpdated: (callback) =>
+		ipcRenderer.on("goals-updated", () => callback()),
 });

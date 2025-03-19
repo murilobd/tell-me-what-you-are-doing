@@ -9,8 +9,8 @@ let popupWindow;
 
 function createWindow() {
 	mainWindow = new BrowserWindow({
-		width: 800,
-		height: 800,
+		width: 1450,
+		height: 900,
 		webPreferences: {
 			preload: path.join(__dirname, "../preload.js"),
 			contextIsolation: true,
@@ -40,7 +40,7 @@ function createPopupWindow() {
 
 	popupWindow = new BrowserWindow({
 		width: 500,
-		height: 500,
+		height: 700,
 		alwaysOnTop: true,
 		webPreferences: {
 			preload: path.join(__dirname, "../preload.js"),
@@ -215,6 +215,115 @@ ipcMain.handle("remove-tag-from-todo", async (event, todoId, tagId) => {
 		return { success: true, result };
 	} catch (error) {
 		console.error("Error removing tag:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+// Weekly goals IPC handlers
+ipcMain.handle("create-weekly-goal", async (event, text) => {
+	try {
+		const goalId = database.createWeeklyGoal(text);
+
+		// Notify renderer of update
+		if (mainWindow && !mainWindow.isDestroyed()) {
+			mainWindow.webContents.send("goals-updated");
+		}
+
+		return { success: true, goalId };
+	} catch (error) {
+		console.error("Error creating weekly goal:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+ipcMain.handle("get-current-week-goals", async () => {
+	try {
+		const goals = database.getCurrentWeekGoals();
+		return { success: true, goals };
+	} catch (error) {
+		console.error("Error getting current week goals:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+ipcMain.handle("get-week-goals", async (event, weekNumber, year) => {
+	try {
+		const goals = database.getWeekGoals(weekNumber, year);
+		return { success: true, goals };
+	} catch (error) {
+		console.error("Error getting weekly goals:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+ipcMain.handle("toggle-goal-completion", async (event, id, completed) => {
+	try {
+		const result = database.toggleGoalCompletion(id, completed);
+
+		// Notify renderer of update
+		if (mainWindow && !mainWindow.isDestroyed()) {
+			mainWindow.webContents.send("goals-updated");
+		}
+
+		return { success: true, result };
+	} catch (error) {
+		console.error("Error toggling goal completion:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+ipcMain.handle("delete-weekly-goal", async (event, id) => {
+	try {
+		const result = database.deleteWeeklyGoal(id);
+
+		// Notify renderer of update
+		if (mainWindow && !mainWindow.isDestroyed()) {
+			mainWindow.webContents.send("goals-updated");
+		}
+
+		return { success: true, result };
+	} catch (error) {
+		console.error("Error deleting weekly goal:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+ipcMain.handle("link-todo-to-goal", async (event, todoId, goalId) => {
+	try {
+		const result = database.linkTodoToGoal(todoId, goalId);
+		return { success: true, result };
+	} catch (error) {
+		console.error("Error linking todo to goal:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+ipcMain.handle("unlink-todo-from-goal", async (event, todoId, goalId) => {
+	try {
+		const result = database.unlinkTodoFromGoal(todoId, goalId);
+		return { success: true, result };
+	} catch (error) {
+		console.error("Error unlinking todo from goal:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+ipcMain.handle("get-goals-for-todo", async (event, todoId) => {
+	try {
+		const goals = database.getGoalsForTodo(todoId);
+		return { success: true, goals };
+	} catch (error) {
+		console.error("Error getting goals for todo:", error);
+		return { success: false, error: error.message };
+	}
+});
+
+ipcMain.handle("get-current-week-number", async () => {
+	try {
+		const weekNumber = database.getCurrentWeekNumber();
+		return { success: true, weekNumber };
+	} catch (error) {
+		console.error("Error getting current week number:", error);
 		return { success: false, error: error.message };
 	}
 });

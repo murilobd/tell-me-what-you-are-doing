@@ -12,103 +12,176 @@
     <div id="app">
         <h1>Tell me what you are doing</h1>
 
-        <div id="timer-container">
-            <h3>Next reminder in: <span id="next-popup-timer">Loading...</span></h3>
-            <div class="timer-controls">
-                <button id="pause-timer-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
-                        <rect x="6" y="4" width="4" height="16"></rect>
-                        <rect x="14" y="4" width="4" height="16"></rect>
-                    </svg>
-                    Pause Timer
-                </button>
-                <button id="restart-timer-btn" disabled>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    Resume Timer
-                </button>
-            </div>
-        </div>
-
-        <!-- Todo List Section -->
-        <div id="todo-section">
-            <div class="section-header">
-                <h2>Todo List</h2>
-                <button id="refresh-todos-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
-                        <path d="M1 4v6h6"></path>
-                        <path d="M23 20v-6h-6"></path>
-                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
-                    </svg>
-                    Refresh
-                </button>
-            </div>
-
-            <!-- Todo Form -->
-            <div class="todo-form">
-                <div class="form-group">
-                    <input type="text" id="todo-text" placeholder="Add a new task...">
-                    <div class="tag-input-container">
-                        <input type="text" id="todo-tags" placeholder="Add tags (separated by commas)">
+        <!-- New layout: Two-column wrapper -->
+        <div class="app-layout">
+            <!-- Left column: Main content -->
+            <div class="main-content-column">
+                <div id="timer-container">
+                    <h3>Next reminder in: <span id="next-popup-timer">Loading...</span></h3>
+                    <div class="timer-controls">
+                        <button id="pause-timer-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="margin-right: 6px;">
+                                <rect x="6" y="4" width="4" height="16"></rect>
+                                <rect x="14" y="4" width="4" height="16"></rect>
+                            </svg>
+                            Pause Timer
+                        </button>
+                        <button id="restart-timer-btn" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="margin-right: 6px;">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Resume Timer
+                        </button>
                     </div>
-                    <button id="add-todo-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        Add Task
-                    </button>
+                </div>
+
+                <div id="weekly-goals-section">
+                    <div class="section-header">
+                        <h2>Weekly Goals</h2>
+                        <div class="header-actions">
+                            <span class="week-indicator">Week <span id="current-week-number"></span></span>
+                            <button id="refresh-goals-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="margin-right: 6px;">
+                                    <path d="M1 4v6h6"></path>
+                                    <path d="M23 20v-6h-6"></path>
+                                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15">
+                                    </path>
+                                </svg>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- New Goal Form -->
+                    <div class="goal-form">
+                        <div class="form-group">
+                            <input type="text" id="goal-text" placeholder="Add a new weekly goal...">
+                            <button id="add-goal-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="margin-right: 6px;">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add Goal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab Navigation -->
+                    <div class="goal-tabs">
+                        <button class="tab-btn active" data-tab="in-progress">In Progress</button>
+                        <button class="tab-btn" data-tab="completed">Completed</button>
+                    </div>
+
+                    <!-- Weekly Goals List with Tab Content -->
+                    <div class="goals-container">
+                        <!-- In Progress Tab Content (Default) -->
+                        <div id="tab-in-progress" class="tab-content active">
+                            <div id="in-progress-goals" class="goals-list">
+                                <div class="loading">Loading goals...</div>
+                            </div>
+                        </div>
+
+                        <!-- Completed Tab Content -->
+                        <div id="tab-completed" class="tab-content">
+                            <div id="completed-goals" class="goals-list">
+                                <div class="loading">Loading goals...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="todo-section">
+                    <div class="section-header">
+                        <h2>Todo List</h2>
+                        <button id="refresh-todos-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="margin-right: 6px;">
+                                <path d="M1 4v6h6"></path>
+                                <path d="M23 20v-6h-6"></path>
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+
+                    <!-- Todo Form -->
+                    <div class="todo-form">
+                        <div class="form-group">
+                            <input type="text" id="todo-text" placeholder="Add a new task...">
+                            <div class="tag-input-container">
+                                <input type="text" id="todo-tags" placeholder="Add tags (separated by commas)">
+                            </div>
+                            <button id="add-todo-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="margin-right: 6px;">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add Task
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Todo List -->
+                    <div class="todo-container">
+                        <div id="todo-list">
+                            <div class="loading">Loading todos...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Todo List -->
-            <div class="todo-container">
-                <div id="todo-list">
-                    <div class="loading">Loading todos...</div>
+            <!-- Right column: Recent Activities -->
+            <div class="sidebar-column">
+                <!-- History section moved to right sidebar -->
+                <div id="history-section">
+                    <div class="section-header">
+                        <h2>Recent Activities</h2>
+                        <button id="refresh-history-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="margin-right: 6px;">
+                                <path d="M1 4v6h6"></path>
+                                <path d="M23 20v-6h-6"></path>
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+
+                    <div class="history-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date and Time</th>
+                                    <th>Activity</th>
+                                    <th style="width: 80px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <!-- History entries will be populated here -->
+                                <tr class="loading-row">
+                                    <td colspan="3">Loading history...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- History section integrated into main view -->
-        <div id="history-section">
-            <div class="section-header">
-                <h2>Recent Activities</h2>
-                <button id="refresh-history-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
-                        <path d="M1 4v6h6"></path>
-                        <path d="M23 20v-6h-6"></path>
-                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
-                    </svg>
-                    Refresh
-                </button>
-            </div>
-
-            <div class="history-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date and Time</th>
-                            <th>Activity</th>
-                            <th style="width: 80px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-table-body">
-                        <!-- History entries will be populated here -->
-                        <tr class="loading-row">
-                            <td colspan="3">Loading history...</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
     <script src="scripts/todoApp.js"></script>
+    <script src="scripts/weeklyGoals.js"></script>
     <script src="scripts/mainView.js"></script>
 </body>
 

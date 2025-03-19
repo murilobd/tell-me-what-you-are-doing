@@ -41,10 +41,10 @@ body {
 }
 
 #app {
-  max-width: 850px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
   background-color: var(--bg-white);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -83,6 +83,7 @@ h3 {
   margin-bottom: 2rem;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
+  margin-top: 0; /* Remove top margin since it's already spaced by the column layout */
 }
 
 #timer-container:hover {
@@ -173,7 +174,7 @@ button:disabled {
   max-width: 500px;
   padding: 2rem;
   background-color: var(--bg-white);
-  border-radius: var(--radius);
+  border-radius: var (--radius);
   box-shadow: var(--shadow-lg);
   margin: 2rem auto;
 }
@@ -202,7 +203,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   box-shadow: var(--shadow-sm);
-  border-radius: var(--radius);
+  border-radius: var (--radius);
   overflow: hidden;
 }
 
@@ -218,7 +219,7 @@ th, td {
 
 th {
   font-weight: 600;
-  color: var(--text-medium);
+  color: var (--text-medium);
 }
 
 tr:last-child td {
@@ -393,7 +394,7 @@ td {
   margin-bottom: 1.5rem;
   background-color: var(--bg-white);
   padding: 1rem;
-  border-radius: var(--radius);
+  border-radius: var (--radius);
   box-shadow: var(--shadow-sm);
 }
 
@@ -723,4 +724,433 @@ input[type="checkbox"]:checked + .checkmark::after {
   background-color: var(--bg-white);
   padding: 0 10px;
   position: relative;
+}
+
+/* Linked Goals styles */
+.linked-goals {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+
+.linked-goals-label {
+  font-size: 0.8rem;
+  color: var(--text-medium);
+  margin-bottom: 0.3rem;
+  font-style: italic;
+}
+
+.goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.linked-goal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(58, 134, 255, 0.1);
+  border-left: 3px solid var(--primary);
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.linked-goal.completed {
+  background-color: rgba(49, 196, 141, 0.1);
+  border-left-color: var(--success);
+  text-decoration: line-through;
+  color: var(--text-medium);
+}
+
+.linked-goal .goal-text {
+  margin-right: 0.5rem;
+  flex: 1;
+}
+
+.unlink-goal {
+  background: none;
+  border: none;
+  color: var(--text-medium);
+  padding: 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  box-shadow: none;
+}
+
+.unlink-goal:hover {
+  color: var(--danger);
+  background: none;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Link goal button */
+.link-goal-btn {
+  background-color: var(--primary-dark);
+}
+
+.link-goal-btn:hover {
+  background-color: var(--primary-dark);
+  opacity: 0.9;
+}
+
+/* Modal styles for goal selection */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--bg-white);
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 500px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 {
+  margin-bottom: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-medium);
+}
+
+.close-btn:hover {
+  color: var(--text-dark);
+  background: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  text-align: right;
+}
+
+.goal-selection-list {
+  margin-top: 0.5rem;
+}
+
+.goal-selection-list p {
+  margin-bottom: 1rem;
+  color: var(--text-medium);
+}
+
+.goal-selection-item {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.goal-selection-item:last-child {
+  border-bottom: none;
+}
+
+.goal-selection-item .goal-checkbox {
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goal-selection-item .goal-text {
+  flex: 1;
+}
+
+.save-links-btn {
+  background-color: var(--success);
+}
+
+.save-links-btn:hover {
+  background-color: var(--success-dark);
+}
+
+/* Update goal item styling for better alignment */
+.goal-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  transition: var(--transition);
+}
+
+.goal-item:hover {
+  background-color: var(--bg-light);
+}
+
+.goal-item:last-child {
+  border-bottom: none;
+}
+
+.goal-checkbox {
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.2rem;
+}
+
+.goal-content {
+  flex: 1;
+}
+
+/* Also update the goal selection modal */
+.goal-selection-item {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.goal-selection-item .goal-checkbox {
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.todo-selection-item {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.todo-selection-item .todo-checkbox {
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.todo-selection-item:last-child,
+.goal-selection-item:last-child {
+  border-bottom: none;
+}
+
+/* Add two-column layout styles */
+.app-layout {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.main-content-column {
+  flex: 1;
+  min-width: 0; /* Fixes flexbox overflow issues */
+  max-width: calc(100% - 350px); /* Ensure main content doesn't get too wide */
+}
+
+.sidebar-column {
+  width: 330px;
+  min-width: 330px;
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start;
+  max-height: calc(100vh - 2rem);
+}
+
+/* Update history section styling */
+#history-section {
+  background-color: var(--bg-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-top: 0; /* Reset top margin since it's now in a sidebar */
+}
+
+/* Make history container scrollable */
+.history-container {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+/* Adjust the history table for the narrower sidebar */
+.history-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-container th,
+.history-container td {
+  padding: 0.6rem;
+  font-size: 0.85rem;
+}
+
+/* Make activity column text wrap */
+.history-container td:nth-child(2) {
+  max-width: 150px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 1024px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .main-content-column {
+    max-width: 100%;
+  }
+
+  .sidebar-column {
+    width: 100%;
+    min-width: 100%;
+    position: static;
+    max-height: none;
+  }
+
+  .history-container {
+    max-height: 400px;
+  }
+}
+
+/* Goal Tabs Styling */
+.goal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.tab-btn {
+  background: none;
+  color: var(--text-medium);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.tab-btn:hover {
+  background: none;
+  color: var(--primary);
+  box-shadow: none;
+  transform: none;
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--primary);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+/* Tab Content */
+.tab-content {
+  display: none;
+  padding-top: 0.5rem;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Goal list container */
+.goals-list {
+  background-color: var(--bg-white);
+  border-radius: var(--radius);
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.goals-container {
+  border-radius: var(--radius);
+}
+
+/* Monday Greeting */
+.monday-greeting {
+  background-color: rgba(58, 134, 255, 0.1);
+  border-left: 4px solid var(--primary);
+  padding: 1rem 1.5rem;
+  margin: 1rem 0 1.5rem;
+  border-radius: var(--radius);
+}
+
+.monday-greeting h3 {
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+}
+
+.monday-greeting p {
+  margin: 0;
+  color: var(--text-medium);
+}
+
+/* Completion info styling */
+.completion-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--success-dark);
+  margin-top: 0.3rem;
+}
+
+.completion-info svg {
+  margin-right: 0.4rem;
+  stroke: var(--success-dark);
+}
+
+.goal-item.completed .goal-text {
+  text-decoration: line-through;
+  color: var(--text-medium);
+}
+
+.goal-item.completed .goal-progress {
+  opacity: 0.7;
+}
+
+/* Update progress bar colors for completed goals */
+.goal-item.completed .progress-fill {
+  background-color: var(--success);
 }

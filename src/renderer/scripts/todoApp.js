@@ -86,8 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			activeSection.innerHTML = "<h3>Active Tasks</h3>";
 			todoList.appendChild(activeSection);
 
-			activeTodos.forEach((todo) => {
-				const todoItem = createTodoElement(todo);
+			activeTodos.forEach(async (todo) => {
+				const todoItem = await createTodoElement(todo);
 				todoList.appendChild(todoItem);
 			});
 		}
@@ -99,15 +99,15 @@ document.addEventListener("DOMContentLoaded", () => {
 			completedSection.innerHTML = "<h3>Completed Tasks</h3>";
 			todoList.appendChild(completedSection);
 
-			completedTodos.forEach((todo) => {
-				const todoItem = createTodoElement(todo);
+			completedTodos.forEach(async (todo) => {
+				const todoItem = await createTodoElement(todo);
 				todoList.appendChild(todoItem);
 			});
 		}
 	}
 
 	// Create todo element function
-	function createTodoElement(todo) {
+	async function createTodoElement(todo) {
 		const todoItem = document.createElement("div");
 		todoItem.className = `todo-item ${todo.completed ? "completed" : ""}`;
 		todoItem.dataset.id = todo.id;
@@ -129,6 +129,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="todo-meta">
                     <span class="todo-date">Created: ${createdDate} at ${createdTime}</span>
                     <div class="todo-tags"></div>
+                    <div class="linked-goals">
+                        <span class="linked-goals-label"></span>
+                        <div class="goals-list"></div>
+                    </div>
                 </div>
             </div>
             <div class="todo-actions">
@@ -136,6 +140,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path>
                         <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                </button>
+                <button class="link-goal-btn" title="Link to Goal">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                     </svg>
                 </button>
                 <button class="delete-btn" title="Delete Task">
@@ -181,6 +191,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
 				tagsContainer.appendChild(tagElement);
 			});
+		}
+
+		// Get and display linked goals
+		try {
+			const result = await window.electronAPI.getGoalsForTodo(todo.id);
+			if (result.success && result.goals && result.goals.length > 0) {
+				const linkedGoalsLabel = todoItem.querySelector(
+					".linked-goals-label"
+				);
+				linkedGoalsLabel.textContent = "Contributing to:";
+
+				const goalsList = todoItem.querySelector(".goals-list");
+				result.goals.forEach((goal) => {
+					const goalElement = document.createElement("div");
+					goalElement.className = `linked-goal ${
+						goal.completed ? "completed" : ""
+					}`;
+
+					goalElement.innerHTML = `
+                        <span class="goal-text">${escapeHTML(goal.text)}</span>
+                        <button class="unlink-goal" title="Unlink from this goal">×</button>
+                    `;
+
+					// Add event listener for unlinking goal
+					goalElement
+						.querySelector(".unlink-goal")
+						.addEventListener("click", async (e) => {
+							e.stopPropagation();
+							try {
+								const result =
+									await window.electronAPI.unlinkTodoFromGoal(
+										todo.id,
+										goal.id
+									);
+								if (result.success) {
+									goalElement.remove();
+									// If no more goals, hide the label
+									if (goalsList.children.length === 0) {
+										linkedGoalsLabel.textContent = "";
+									}
+								}
+							} catch (error) {
+								console.error("Error unlinking goal:", error);
+							}
+						});
+
+					goalsList.appendChild(goalElement);
+				});
+			}
+		} catch (error) {
+			console.error("Error getting linked goals:", error);
 		}
 
 		// Event listeners for todo actions
@@ -232,7 +293,142 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 		});
 
+		// 4. Link to goal
+		const linkGoalBtn = todoItem.querySelector(".link-goal-btn");
+		linkGoalBtn.addEventListener("click", async () => {
+			try {
+				// Get current week's goals
+				const result = await window.electronAPI.getCurrentWeekGoals();
+				if (result.success && result.goals) {
+					// Filter for active goals only
+					const activeGoals = result.goals.filter(
+						(goal) => !goal.completed
+					);
+
+					if (activeGoals.length === 0) {
+						alert(
+							"No active goals available. Create some weekly goals first!"
+						);
+						return;
+					}
+
+					// Get current links
+					const linkedGoals =
+						await window.electronAPI.getGoalsForTodo(todo.id);
+					const linkedGoalIds = linkedGoals.success
+						? linkedGoals.goals.map((g) => g.id)
+						: [];
+
+					// Show goal selection modal
+					showGoalSelectionModal(todo.id, activeGoals, linkedGoalIds);
+				} else {
+					alert("Failed to load goals. Please try again.");
+				}
+			} catch (error) {
+				console.error("Error loading goals for linking:", error);
+				alert("An error occurred. Please try again.");
+			}
+		});
+
 		return todoItem;
+	}
+
+	// Function to show goal selection modal
+	function showGoalSelectionModal(todoId, allGoals, linkedGoalIds) {
+		// Create modal
+		const modal = document.createElement("div");
+		modal.className = "modal";
+		modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Link to Weekly Goals</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="goal-selection-list">
+                        <p>Select goals that this task contributes to:</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="save-links-btn">Save</button>
+                </div>
+            </div>
+        `;
+
+		document.body.appendChild(modal);
+
+		// Populate goals
+		const goalList = modal.querySelector(".goal-selection-list");
+		allGoals.forEach((goal) => {
+			const isLinked = linkedGoalIds.includes(goal.id);
+
+			const goalItem = document.createElement("div");
+			goalItem.className = "goal-selection-item";
+			goalItem.innerHTML = `
+            <div class="goal-checkbox">
+                <input type="checkbox" id="goal-select-${goal.id}" data-id="${
+				goal.id
+			}" ${isLinked ? "checked" : ""}>
+                <label for="goal-select-${goal.id}" class="checkmark"></label>
+            </div>
+            <div class="goal-text">${escapeHTML(goal.text)}</div>
+        `;
+
+			goalList.appendChild(goalItem);
+		});
+
+		// Close modal handler
+		const closeBtn = modal.querySelector(".close-btn");
+		closeBtn.addEventListener("click", () => {
+			document.body.removeChild(modal);
+		});
+
+		// Save links handler
+		const saveBtn = modal.querySelector(".save-links-btn");
+		saveBtn.addEventListener("click", async () => {
+			try {
+				// Get all checked checkboxes
+				const checkedBoxes = modal.querySelectorAll(
+					"input[type='checkbox']:checked"
+				);
+				const goalIds = Array.from(checkedBoxes).map((cb) =>
+					parseInt(cb.dataset.id)
+				);
+
+				// Get all unchecked checkboxes (to unlink)
+				const uncheckedBoxes = modal.querySelectorAll(
+					"input[type='checkbox']:not(:checked)"
+				);
+				const unlinkIds = Array.from(uncheckedBoxes).map((cb) =>
+					parseInt(cb.dataset.id)
+				);
+
+				// Link newly selected goals
+				for (const goalId of goalIds) {
+					if (!linkedGoalIds.includes(goalId)) {
+						await window.electronAPI.linkTodoToGoal(todoId, goalId);
+					}
+				}
+
+				// Unlink deselected goals
+				for (const goalId of linkedGoalIds) {
+					if (unlinkIds.some((id) => id === goalId)) {
+						await window.electronAPI.unlinkTodoFromGoal(
+							todoId,
+							goalId
+						);
+					}
+				}
+
+				// Reload todos to update UI
+				loadTodos();
+
+				// Close modal
+				document.body.removeChild(modal);
+			} catch (error) {
+				console.error("Error updating goal links:", error);
+			}
+		});
 	}
 
 	// Add tag to todo function

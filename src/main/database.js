@@ -50,6 +50,26 @@ function initializeDatabase() {
             FOREIGN KEY (todo_id) REFERENCES todos (id) ON DELETE CASCADE,
             FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE
         );
+        
+        -- NEW: Weekly goals table
+        CREATE TABLE IF NOT EXISTS weekly_goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            text TEXT NOT NULL,
+            created_at INTEGER NOT NULL,
+            week_number INTEGER NOT NULL,
+            year INTEGER NOT NULL,
+            completed INTEGER DEFAULT 0,
+            completed_at INTEGER DEFAULT NULL
+        );
+        
+        -- NEW: Junction table for todos and goals
+        CREATE TABLE IF NOT EXISTS todo_goals (
+            todo_id INTEGER NOT NULL,
+            goal_id INTEGER NOT NULL,
+            PRIMARY KEY (todo_id, goal_id),
+            FOREIGN KEY (todo_id) REFERENCES todos (id) ON DELETE CASCADE,
+            FOREIGN KEY (goal_id) REFERENCES weekly_goals (id) ON DELETE CASCADE
+        );
     `);
 }
 
@@ -194,6 +214,117 @@ function getTagsForTodo(todoId) {
 		.all(todoId);
 }
 
+// Add these weekly goal functions
+// Get the current week number
+function getCurrentWeekNumber() {
+	const now = new Date();
+	const start = new Date(now.getFullYear(), 0, 1);
+	const diff = now - start;
+	const oneWeek = 604800000; // milliseconds in a week
+	return Math.floor(diff / oneWeek) + 1;
+}
+
+// Create a new weekly goal
+function createWeeklyGoal(text) {
+	const now = new Date();
+	const weekNumber = getCurrentWeekNumber();
+	const year = now.getFullYear();
+
+	const stmt = db.prepare(
+		"INSERT INTO weekly_goals (text, created_at, week_number, year) VALUES (?, ?, ?, ?)"
+	);
+	const info = stmt.run(text, Date.now(), weekNumber, year);
+	return info.lastInsertRowid;
+}
+
+// Get weekly goals for the current week
+function getCurrentWeekGoals() {
+	const now = new Date();
+	const weekNumber = getCurrentWeekNumber();
+	const year = now.getFullYear();
+
+	return getWeekGoals(weekNumber, year);
+}
+
+// Get goals for a specific week
+function getWeekGoals(weekNumber, year) {
+	const goals = db
+		.prepare(
+			`SELECT * FROM weekly_goals 
+         WHERE week_number = ? AND year = ? 
+         ORDER BY completed ASC, created_at ASC`
+		)
+		.all(weekNumber, year);
+
+	// For each goal, get the associated todos
+	return goals.map((goal) => {
+		const todos = db
+			.prepare(
+				`
+            SELECT todos.* FROM todos
+            JOIN todo_goals ON todos.id = todo_goals.todo_id
+            WHERE todo_goals.goal_id = ?
+        `
+			)
+			.all(goal.id);
+
+		return { ...goal, todos };
+	});
+}
+
+// Toggle goal completion status
+function toggleGoalCompletion(id, completed) {
+	const completedAt = completed ? Date.now() : null;
+	const stmt = db.prepare(
+		"UPDATE weekly_goals SET completed = ?, completed_at = ? WHERE id = ?"
+	);
+	return stmt.run(completed ? 1 : 0, completedAt, id);
+}
+
+// Delete a goal
+function deleteWeeklyGoal(id) {
+	const stmt = db.prepare("DELETE FROM weekly_goals WHERE id = ?");
+	return stmt.run(id);
+}
+
+// Link a todo to a goal
+function linkTodoToGoal(todoId, goalId) {
+	// Check if this association already exists
+	const existing = db
+		.prepare("SELECT 1 FROM todo_goals WHERE todo_id = ? AND goal_id = ?")
+		.get(todoId, goalId);
+
+	if (!existing) {
+		const stmt = db.prepare(
+			"INSERT INTO todo_goals (todo_id, goal_id) VALUES (?, ?)"
+		);
+		return stmt.run(todoId, goalId);
+	}
+
+	return { changes: 0 };
+}
+
+// Remove link between todo and goal
+function unlinkTodoFromGoal(todoId, goalId) {
+	const stmt = db.prepare(
+		"DELETE FROM todo_goals WHERE todo_id = ? AND goal_id = ?"
+	);
+	return stmt.run(todoId, goalId);
+}
+
+// Get goals linked to a specific todo
+function getGoalsForTodo(todoId) {
+	return db
+		.prepare(
+			`
+        SELECT weekly_goals.* FROM weekly_goals
+        JOIN todo_goals ON weekly_goals.id = todo_goals.goal_id
+        WHERE todo_goals.todo_id = ?
+    `
+		)
+		.all(todoId);
+}
+
 module.exports = {
 	// Existing exports
 	saveTextEntry,
@@ -212,4 +343,15 @@ module.exports = {
 	assignTagToTodo,
 	removeTagFromTodo,
 	getTagsForTodo,
+
+	// Weekly goal exports
+	createWeeklyGoal,
+	getCurrentWeekGoals,
+	getWeekGoals,
+	toggleGoalCompletion,
+	deleteWeeklyGoal,
+	linkTodoToGoal,
+	unlinkTodoFromGoal,
+	getGoalsForTodo,
+	getCurrentWeekNumber,
 };
